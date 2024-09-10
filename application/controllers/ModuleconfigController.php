@@ -16,27 +16,11 @@ class ModuleconfigController extends Controller
     /**
      * In case you want to use module config settings in this or any other controller this code is for you
      */
-    private $settings_sometext;
-    private $settings_somepassword;
-    private $settings_somedropdown;
-    private $settings_somecheckbox;
 
     public function init()
     {
         $this->assertPermission('config/modules');
 
-
-        $this->settings_sometext = Config::module('icingacamp', "config")->get('settings', 'sometext') != null ?
-            trim(Config::module('icingacamp', "config")->get('settings', 'settings_sometext'), "") : null;
-
-        $this->settings_somepassword = Config::module('icingacamp', "config")->get('settings', 'somepassword') != null ?
-            trim(Config::module('icingacamp', "config")->get('settings', 'somepassword'), "") : null;
-
-        $this->settings_somedropdown = Config::module('icingacamp', "config")->get('settings', 'somedropdown') != null ?
-            trim(Config::module('icingacamp', "config")->get('settings', 'somedropdown'), "") : null;
-
-        $this->settings_somecheckbox = Config::module('icingacamp', "config")->get('settings', 'somecheckbox') != null ?
-            trim(Config::module('icingacamp', "config")->get('settings', 'somecheckbox'), "") : null;
 
         parent::init();
     }

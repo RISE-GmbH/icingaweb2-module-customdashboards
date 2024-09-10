@@ -30,19 +30,26 @@ class MappingController extends Controller
 
     public function init()
     {
-        $this->assertPermission('customdashboards/mapping');
+
     }
 
     public function indexAction()
     {
         $this->setTitle($this->translate('Panes'));
-        $this->view->configs = (new MappingIniRepository())->select();
+        if($this->hasPermission('customdashboards/mapping')){
+            $this->view->configs = (new MappingIniRepository())->select();
+        }else{
+            $this->view->configs = (new MappingIniRepository())->select()->where('author',$this->auth->getUser()->getUsername());
+        }
+
 
         $this->_helper->viewRenderer->setRender('mapping/table', null, true);
     }
 
     public function newAction()
     {
+        $this->assertPermission('customdashboards/mapping');
+
         $form = new MappingForm([
             'mode'  => MappingForm::MODE_INSERT
         ]);
@@ -59,6 +66,14 @@ class MappingController extends Controller
     public function updateAction()
     {
         $id = $this->params->getRequired('id');
+
+        if(! $this->hasPermission('customdashboards/mapping')){
+
+            $model = (new MappingIniRepository())->select()->where('author',$this->auth->getUser()->getUsername())->where('name',$id)->fetchRow();
+            if($model === false){
+                throw new \Exception("Not Allowed");
+            }
+        }
 
         $form = new MappingForm([
             'mode'          => MappingForm::MODE_UPDATE,
@@ -78,6 +93,14 @@ class MappingController extends Controller
     public function deleteAction()
     {
         $id = $this->params->getRequired('id');
+
+        if(! $this->hasPermission('customdashboards/mapping')){
+
+            $model = (new MappingIniRepository())->select()->where('author',$this->auth->getUser()->getUsername())->where('name',$id)->fetchRow();
+            if($model === false){
+                throw new \Exception("Not Allowed");
+            }
+        }
 
         $form = new MappingForm([
             'mode'          => MappingForm::MODE_DELETE,

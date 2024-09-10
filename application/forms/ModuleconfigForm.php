@@ -83,6 +83,14 @@ class ModuleconfigForm extends ConfigForm
             'value' =>  "3",
         ]);
 
+        $this->addElement('checkbox', 'settings_allow_external_urls', [
+            'label' => $this->translate('Allow external Urls'),
+            'description' => $this->translate(
+                'Enable or disable the usage of external urls in customdashboards'
+            ),
+        ]);
+
+
     }
 
 

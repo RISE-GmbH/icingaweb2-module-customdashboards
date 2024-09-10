@@ -51,7 +51,7 @@ class CustomDashboardController extends ActionController
 
         foreach ($forAllUsers as $mapping){
             $permission = 'customdashboards/mapping/'.$mapping->name;
-            if($this->hasPermission($permission) || $this->hasPermission("customdashboards/mapping")){
+            if($this->hasPermission($permission) || $this->hasPermission("customdashboards/mapping") || $mapping->author == $this->Auth()->getUser()->getUsername()){
                 $mappings[$mapping->name]=$mapping;
             };
 
@@ -66,18 +66,20 @@ class CustomDashboardController extends ActionController
             $pane = $this->dashboard->getPane($mapping->name);
 
 
-            $max_dashlets  = intval(Config::module('customdashboards', "config")->get('settings', 'max_dashlets'));
-            if($max_dashlets ==0){
-                $max_dashlets=4;
-            }
+            $max_dashlets  = intval(Config::module('customdashboards', "config")->get('settings', 'max_dashlets',4));
+
             for($i=1; $i<=$max_dashlets;$i++){
                 if($mapping->{"dashletname".$i} == "" || $mapping->{"dashletname".$i} ==null){
                     continue;
                 }
+                $dashletUrl= $mapping->{"dashleturl".$i};
 
+                if(strpos($dashletUrl,'https://') !== false || strpos($dashletUrl,'http://') !== false ){
+                    $dashletUrl= \ipl\Web\Url::fromPath('customdashboards/external',['name'=>$mapping->name, 'dashlet'=>$i]);
+                }
                 $dashlet = new DashboardDashlet(
                     $mapping->{"dashletname".$i},
-                    $mapping->{"dashleturl".$i},
+                    $dashletUrl,
                     $pane
                 );
 

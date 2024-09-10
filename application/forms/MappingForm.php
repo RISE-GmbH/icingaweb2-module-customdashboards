@@ -77,7 +77,16 @@ class MappingForm extends RepositoryForm
                 'required'      => true
             )
         );
-
+        $this->addElement(
+            'text',
+            'author',
+            array(
+                'description'   => $this->translate('Author of the Pane'),
+                'label'         => $this->translate('Author'),
+                'required'      => true,
+                'value'=>$this->Auth()->getUser()->getUsername()
+            )
+        );
         $this->addElement(
             'number',
             'priority',

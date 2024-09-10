@@ -31,13 +31,8 @@ $section = $this->menuSection($name, [
     'priority' => $priority
 ]);
 
-$this->providePermission('customdashboards/mapping', $this->translate('allow access to mapping'));
 
 
-$section->add(N_('Mapping'))
-    ->setUrl('customdashboards/mapping')
-    ->setPermission('customdashboards/mapping')
-    ->setPriority(30);
 
 $this->provideConfigTab('config/mapping', array(
     'title' => $this->translate('Configuration'),
@@ -45,10 +40,17 @@ $this->provideConfigTab('config/mapping', array(
     'url' => 'mapping'
 ));
 
-
 $auth = Auth::getInstance();
-if ($auth->isAuthenticated() && !Icinga::app()->isCli()) {
 
+if ($auth->isAuthenticated() && !Icinga::app()->isCli()) {
+    $this->providePermission('customdashboards/mapping', $this->translate('allow access to mapping'));
+
+    $isAuthor = ((new MappingIniRepository())->select()->where('author',$auth->getUser()->getUsername())->count() > 0);
+    if($auth->hasPermission('customdashboards/mapping') || $isAuthor ){
+        $section->add(N_('Mapping'))
+            ->setUrl('customdashboards/mapping')
+            ->setPriority(30);
+    }
     $mappings = (new MappingIniRepository())->select()->fetchAll();
 
     foreach ($mappings as $mapping) {
@@ -56,13 +58,14 @@ if ($auth->isAuthenticated() && !Icinga::app()->isCli()) {
 
         if($mapping->enabled){
             $this->providePermission($permission, $this->translate('allow access to mapping') . " " . $mapping->name);
+            if($auth->hasPermission($permission) || $mapping->author == $auth->getUser()->getUsername()){
+                $section->add($mapping->name, array(
+                    'url' => 'customdashboards/custom-dashboard',
+                    'urlParameters' => array('pane' => $mapping->name),
+                    'priority' => $mapping->priority,
+                ));
+            }
 
-            $section->add($mapping->name, array(
-                'url' => 'customdashboards/custom-dashboard',
-                'urlParameters' => array('pane' => $mapping->name),
-                'priority' => $mapping->priority,
-                'permission' => $permission
-            ));
         }
 
     }

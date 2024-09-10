@@ -3,17 +3,21 @@
 </div>
 <div class="content">
     <div class="actions">
-        <?= $this->qlink(
-            $this->translate('Create a new Pane') ,
-            'customdashboards/mapping/new',
-            null,
-            [
-                'class'             => 'button-link',
-                'data-base-target'  => '_next',
-                'icon'              => 'plus',
-                'title'             => $this->translate('Create a New Pane')
-            ]
-        ) ?>
+        <?php
+        if(\Icinga\Authentication\Auth::getInstance()->hasPermission('customdashboards/mapping')){
+            echo $this->qlink(
+                $this->translate('Create a new Pane') ,
+                'customdashboards/mapping/new',
+                null,
+                [
+                    'class'             => 'button-link',
+                    'data-base-target'  => '_next',
+                    'icon'              => 'plus',
+                    'title'             => $this->translate('Create a New Pane')
+                ]
+            );
+        }
+        ?>
     </div>
 <?php /** @var \Icinga\Repository\RepositoryQuery $configs */ if (! $configs->hasResult()): ?>
     <p><?= $this->escape($this->translate('No Pane configured yet.')) ?></p>

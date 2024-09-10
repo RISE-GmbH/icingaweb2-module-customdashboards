@@ -37,6 +37,7 @@ class MappingIniRepository extends IniRepository
     protected $queryColumns = [
         'mapping' => [
             'name',
+            'author',
             'priority',
             'enabled',
         ]
